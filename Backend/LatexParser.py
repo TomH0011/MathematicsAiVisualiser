@@ -142,8 +142,8 @@ def parse(tokens):
     return ast
 
 
-# 3. Example usage
-expr = r"\sum{\sin{\sqrt{x^2}}} + \frac{a_1}{b^2} + \alpha"
-tokens = tokenise_latex(expr)
-ast = parse(tokens)
-pprint.pprint(ast)
+# # 3. Example usage
+# expr = r"\sum{\sin{\sqrt{x^2}}} + \frac{a_1}{b^2} + \alpha"
+# tokens = tokenise_latex(expr)
+# ast = parse(tokens)
+# pprint.pprint(ast)
