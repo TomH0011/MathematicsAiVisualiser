@@ -13,5 +13,5 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 1920, 1080)
 
         container = QWidget()
-        container.setLayout(layout.frame())
+        container.setLayout(layout.Gui.frame(self))
         self.setCentralWidget(container)
