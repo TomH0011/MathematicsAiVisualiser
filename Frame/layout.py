@@ -5,7 +5,7 @@ from Backend import AiAPi
 
 class Gui:
     def __init__(self):
-        self.model = AiAPi.load_model()
+        pass
 
     def frame(self):
         layout = QVBoxLayout()  # Layout type
@@ -16,7 +16,8 @@ class Gui:
 
         layout.addWidget(QGraphicsView())  # Where render goes
 
-        layout.addWidget(QLabel(self.model))  # Where text explanation goes
+        self.explanation_label = QLabel("Text will appear here")
+        layout.addWidget(self.explanation_label)  # Where text explanation goes
 
         button = QPushButton("Render Proof")  # Button to begin render
         layout.addWidget(button)
@@ -32,6 +33,7 @@ class Gui:
 
         try:
             result = AiAPi.load_model(proof)  # Send the user input!
+            self.explanation_label.setText(result)
             QMessageBox.information(None, "AI Response", result)
         except Exception as e:
             QMessageBox.critical(None, "Error", str(e))
