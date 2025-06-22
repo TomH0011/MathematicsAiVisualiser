@@ -36,7 +36,7 @@ class Gui:
         print("Button Pressed:", proof)
 
         try:
-            result = AiAPi.load_model(proof)  # Send the user input!
+            result = AiAPi.load_model_openai(proof)  # Send the user input!
             self.explanation_label.setText(result)
             QMessageBox.information(None, "AI Response", result)
         except Exception as e:
