@@ -8,9 +8,10 @@ def main():
     app = QApplication()
     window = OpenFrame.MainWindow()
     window.show()
-    sys.exit((app.exec()))
+    exit_code = app.exec()
     print("Exiting Gui")
     print("Code Finishing")
+    sys.exit(exit_code)
 
 
 if __name__ == '__main__':

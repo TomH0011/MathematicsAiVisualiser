@@ -1,5 +1,5 @@
 import PySide6.QtCore
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QTextEdit, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QTextEdit, QLabel, QScrollArea
 from Backend import AiAPi
 """
 This class handles things within the Gui such as labels or buttons as well as what they do
@@ -8,6 +8,7 @@ This class handles things within the Gui such as labels or buttons as well as wh
 
 class Gui:
     def __init__(self):
+        self.scroll_area = None
         self.toggle_button = None
         self.switch_model = 1  # 1 = GPT, 0 = Gemini
         self.model_loader = AiAPi.ModelLoader()
@@ -23,9 +24,16 @@ class Gui:
         self.text_edit.setPlainText("Enter Proof Here")  # Where user enters proof
         layout.addWidget(self.text_edit)
 
+        # This is a QLabel wrapped into a QScrollArea for longer responses
         self.explanation_label = QLabel("Text will appear here")
-        self.explanation_label.setFixedSize(600, 400)
-        layout.addWidget(self.explanation_label)  # Where text explanation goes
+        self.explanation_label.setWordWrap(True)  # Important for multi-line text
+        self.explanation_label.setAlignment(PySide6.QtCore.Qt.AlignmentFlag.AlignTop)
+
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFixedSize(600, 400)
+        self.scroll_area.setWidget(self.explanation_label)
+        layout.addWidget(self.scroll_area)
 
         button = QPushButton("Render Proof")  # Button to begin render
         button.setFixedSize(600, 50)
@@ -52,7 +60,6 @@ class Gui:
                 raise ValueError("Invalid model selected.")
 
             self.explanation_label.setText(result)
-            QMessageBox.information(None, "AI Response", result)
         except Exception as e:
             QMessageBox.critical(None, "Error", str(e))
 

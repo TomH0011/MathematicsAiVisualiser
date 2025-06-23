@@ -16,7 +16,6 @@ COMMANDS = [
 # 1. Tokeniser
 def tokenise_latex(expr):
 
-
     token_spec = [
         (r'\\[a-zA-Z]+', 'COMMAND'),
         (r'{', 'LBRACE'),
