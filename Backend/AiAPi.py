@@ -22,8 +22,9 @@ class ModelLoader:
         self.genai_model = genai.GenerativeModel('gemini-1.5-flash')
 
     def load_model_openai(self, proof: str) -> str:
-        response = self.openai_client.chat.completions.create(
-            model="gpt-4o",
+        stream = self.openai_client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            stream=True,
             messages=[
                 {"role": "system", "content": (
                     "You are a mathematical proof assistant that processes mathematical text only"
@@ -53,7 +54,14 @@ class ModelLoader:
                 {"role": "user", "content": proof}
             ]
         )
-        return response.choices[0].message.content
+        full_response = ""
+        for chunk in stream:
+            first_chunk = 0
+            delta = chunk.choices[first_chunk].delta
+            if delta and hasattr(delta, "content") and delta.content:
+                full_response += delta.content
+
+        return full_response
 
     def load_model_google_gemini(self, proof: str) -> str:
         prompt = (

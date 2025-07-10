@@ -1,6 +1,8 @@
 import PySide6.QtCore
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox, QPushButton, QTextEdit, QLabel, QScrollArea
 from Backend import AiAPi
+from Backend.SwitchModels import SwitchModels
+
 """
 This class handles things within the Gui such as labels or buttons as well as what they do
 """
@@ -10,13 +12,12 @@ class Gui:
     def __init__(self):
         self.scroll_area = None
         self.toggle_button = None
-        self.switch_model = 1  # 1 = GPT, 0 = Gemini
         self.model_loader = AiAPi.ModelLoader()
-        self.model = "gpt-4o" if self.switch_model else "gemini"
+        self.switch_model = SwitchModels() # Abstracted the switch model method
         self.text_edit = None
         self.explanation_label = None
 
-    def frame(self): # Handles the Pyside QT GUI
+    def frame(self):  # Handles the Pyside QT GUI
         layout = QVBoxLayout()  # Layout type
 
         self.text_edit = QTextEdit()
@@ -26,8 +27,9 @@ class Gui:
 
         # This is a QLabel wrapped into a QScrollArea for longer responses
         self.explanation_label = QLabel("Text will appear here")
-        self.explanation_label.setWordWrap(True)  # Important for multi-line text
+        self.explanation_label.setWordWrap(True)
         self.explanation_label.setAlignment(PySide6.QtCore.Qt.AlignmentFlag.AlignTop)
+        self.explanation_label.setTextInteractionFlags(PySide6.QtCore.Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
@@ -40,21 +42,27 @@ class Gui:
         button.clicked.connect(self.__handle_click)
         layout.addWidget(button)
 
-        self.toggle_button = QPushButton(self.model)  # Model toggle button
+        button = QPushButton("Save Proof")  # Button to begin render
+        button.setFixedSize(600, 50)
+        # button.clicked.connect(self.__handle_click) # create handle save on click
+        layout.addWidget(button)
+
+        self.toggle_button = QPushButton(self.switch_model.model)  # Model toggle button
         self.toggle_button.setFixedSize(600, 50)
         self.toggle_button.clicked.connect(self.__switch_models_on_click)
         layout.addWidget(self.toggle_button)
 
         return layout
 
-    def __handle_click(self): # Handles the render button click
+    def __handle_click(self):  # Handles the render button click
+        # Need to abstract this method
         proof = self.text_edit.toPlainText()
         print("Button Pressed:", proof)
 
         try:
-            if self.model == "gpt-4o":
+            if self.switch_model.model == "gpt-4o":
                 result = self.model_loader.load_model_openai(proof)
-            elif self.model == "gemini":
+            elif self.switch_model.model == "gemini":
                 result = self.model_loader.load_model_google_gemini(proof)
             else:
                 raise ValueError("Invalid model selected.")
@@ -64,10 +72,6 @@ class Gui:
             QMessageBox.critical(None, "Error", str(e))
 
     def __switch_models_on_click(self):
-        self.switch_model = 1 - self.switch_model
-        self.model = "gpt-4o" if self.switch_model else "gemini"
-        print("Switched to model:", self.model)
-        self.toggle_button.setText(self.model)
-        self.toggle_button.repaint()
-
-
+        new_model = self.switch_model.switch()
+        self.toggle_button.setText(new_model)
+        print("Button clicked - Model swapped")
