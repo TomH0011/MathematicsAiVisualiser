@@ -21,7 +21,7 @@ class Gui:
         layout = QVBoxLayout()  # Layout type
 
         self.text_edit = QTextEdit()
-        self.text_edit.setFixedSize(600, 400)
+        self.text_edit.setFixedSize(600, 150) # Width, height
         self.text_edit.setPlainText("Enter Proof Here")  # Where user enters proof
         layout.addWidget(self.text_edit)
 
@@ -33,17 +33,27 @@ class Gui:
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
-        self.scroll_area.setFixedSize(600, 400)
+        self.scroll_area.setFixedSize(600, 400) # Width Height
         self.scroll_area.setWidget(self.explanation_label)
         layout.addWidget(self.scroll_area)
 
         button = QPushButton("Render Proof")  # Button to begin render
-        button.setFixedSize(600, 50)
+        button.setFixedSize(600, 50) # Width, Height
         button.clicked.connect(self.__handle_click)
         layout.addWidget(button)
 
         button = QPushButton("Save Proof")  # Button to begin render
-        button.setFixedSize(600, 50)
+        button.setFixedSize(600, 50) # Width, Height
+        # button.clicked.connect(self.__handle_click) # create handle save on click
+        layout.addWidget(button)
+
+        button = QPushButton("Previous Proof")  # Button to begin render
+        button.setFixedSize(600, 50) # Width, Height
+        # button.clicked.connect(self.__handle_click) # create handle save on click
+        layout.addWidget(button)
+
+        button = QPushButton("Next Proof")  # Button to begin render
+        button.setFixedSize(600, 50) # Width, Height
         # button.clicked.connect(self.__handle_click) # create handle save on click
         layout.addWidget(button)
 
@@ -54,22 +64,26 @@ class Gui:
 
         return layout
 
-    def __handle_click(self):  # Handles the render button click
-        # Need to abstract this method
+    def __handle_click(self):
         proof = self.text_edit.toPlainText()
         print("Button Pressed:", proof)
 
         try:
-            if self.switch_model.model == "gpt-4o":
-                result = self.model_loader.load_model_openai(proof)
-            elif self.switch_model.model == "gemini":
-                result = self.model_loader.load_model_google_gemini(proof)
-            else:
-                raise ValueError("Invalid model selected.")
-
+            result = self.get_ai_response(proof)
             self.explanation_label.setText(result)
         except Exception as e:
             QMessageBox.critical(None, "Error", str(e))
+
+    def get_ai_response(self, proof: str) -> str:
+        """
+        Given a proof string, calls the right model and returns the result.
+        """
+        if self.switch_model.model == "gpt-4o":
+            return self.model_loader.load_model_openai(proof)
+        elif self.switch_model.model == "gemini":
+            return self.model_loader.load_model_google_gemini(proof)
+        else:
+            raise ValueError("Invalid model selected.")
 
     def __switch_models_on_click(self):
         new_model = self.switch_model.switch()
