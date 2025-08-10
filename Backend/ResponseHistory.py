@@ -22,24 +22,20 @@ class ResponseHistory:
         new_node = Node(data)
 
         if not self.head:
-            # Empty list: new node is the only one
             self.head = new_node
             self.tail = new_node
             self.current = new_node
-
         elif self.current is None:
-            # If no current pointer, treat as append
             self.tail.next = new_node
             self.tail = new_node
             self.current = new_node
-
         else:
-            # Insert after `current` and drop everything after
-            self.current.next = new_node  # cut off old next chain
-            self.tail = new_node  # new node is the new tail
-            self.current = new_node  # move current to new node
+            self.current.next = new_node
+            self.tail = new_node
+            self.current = new_node
 
         print(f"Inserted new response: {data}")
+        return data  # RETURN IT!
 
     def show_previous_response(self):
         if not self.head:
